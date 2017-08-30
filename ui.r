@@ -1,8 +1,5 @@
-## MatrixEQTL Shiny App##
-#########################
-
-library(shiny)
-library(shinydashboard)
+## MatrixEQTL Shiny App ##
+##########################
 
 
 header <- dashboardHeader( title = "eQTL analysis via MatrixEQTL",
@@ -11,18 +8,38 @@ header <- dashboardHeader( title = "eQTL analysis via MatrixEQTL",
 
 
 sidebar <- dashboardSidebar(
+  width = 350,
   sidebarMenu(
+    menuItem("Instructions", tabName = "instructions", icon = icon("book")),
     menuItem("Inputs and settings", tabName = "inputs", icon = icon("folder-open"),
              badgeLabel = "Important!", badgeColor = "red"),
+    actionButton("calculate", "Calculation", icon = icon("play-circle")),
     menuItem("Results", tabName = "results", icon = icon("file-text")),
+    menuItem("Plots", tabName = "plots", icon = icon("picture-o")),
     menuItem("Source code", icon = icon("file-code-o"), 
              href = "https://github.com/IgorHut/Shiny_MatrixEQTL", newtab = TRUE)
+  ),
+  
+  br(),
+  br(),
+  br(),
+  hr(),
+  
+  tags$span(style = "color:darkorange",
+            tags$footer(("Built by"), a( href = "http://igorhut.com", target = "_blank", "Igor Hut"),
+                        br(),
+                        ("Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)")
+            )
   )
 )
 
 body <- dashboardBody(
   tabItems(
-    # First tab content
+    #First tab content
+    tabItem(tabName = "instructions",
+            h1("Jebala Mara bumbara...")
+            ),
+    # Second tab content
     tabItem(tabName = "inputs", 
             # Boxes need to be put in a row (or column)
             fluidRow(
@@ -66,7 +83,6 @@ body <- dashboardBody(
             
           fluidRow(
                 tabBox(
-                  # Title can include an icon
                   title = "Settings",
                   id = "tabset2",
                   width = 12,
@@ -100,29 +116,60 @@ body <- dashboardBody(
                                         max = 1e10, min = 0)
                            )
                 )
-              )
+              ),
+          fluidRow(
+            box(
+              background = "blue",
+              actionButton("calculate", "Calculation", 
+                           width = '100%', icon = icon("play-circle"))
+              
+            )
+            
+          )
         ),
     
     
 
-    #Second tab content
+    #Third tab content
     tabItem(tabName = "results",
-            h2("Widgets tab content",
-               fluidRow(
-                 box(
-                   title = "Random box",
-                   "Box content here", br(), "More box content",
-                   textInput("text", "Some text here:")
-                 ),
-                 box(
-                   title = "Histogram", status = "warning", solidHeader = TRUE,
-                   collapsible = TRUE,
-                   plotOutput("plot2", height = 250)
-                 )
-               )
-               )
+            fluidRow(
+              tabBox(
+                title = "Results",
+                id = "tabset3",
+                width = 12,
+                tabPanel(
+                  "Cis eQTLs",
+                  DT::dataTableOutput('tbl_cis')
+                ),
+                tabPanel(
+                  "Trans eQTLs",
+                  DT::dataTableOutput('tbl_trans')
+              )
+              )
+            )
+            ),
+            #Fourth tab content
+            tabItem(tabName = "plots",
+                    fluidRow(
+                      tabBox(
+                        title = "Plots",
+                        id = "tabset4",
+                        width = 12,
+                        tabPanel(
+                          "P-values histogram",
+                          plotOutput("first_plot")
+                        ),
+                        tabPanel(
+                          "Q-Q plot for p-values",
+                          plotOutput("second_plot")
+                        )
+                      )
+                    )
+                    
+                    )
+  
 )
-))
+)
 
   
 
