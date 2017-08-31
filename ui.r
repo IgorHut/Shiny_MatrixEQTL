@@ -1,6 +1,12 @@
 ## MatrixEQTL Shiny App ##
 ##########################
 
+library(shiny)
+library(shinydashboard)
+library(MatrixEQTL)
+library(shinyFiles)
+
+
 
 header <- dashboardHeader( title = "eQTL analysis via MatrixEQTL",
                            titleWidth = 350
@@ -13,7 +19,7 @@ sidebar <- dashboardSidebar(
     menuItem("Instructions", tabName = "instructions", icon = icon("book")),
     menuItem("Inputs and settings", tabName = "inputs", icon = icon("folder-open"),
              badgeLabel = "Important!", badgeColor = "red"),
-    actionButton("calculate", "Calculation", icon = icon("play-circle")),
+    #actionButton("calculate1", "Calculation", icon = icon("play-circle")),
     menuItem("Results", tabName = "results", icon = icon("file-text")),
     menuItem("Plots", tabName = "plots", icon = icon("picture-o")),
     menuItem("Source code", icon = icon("file-code-o"), 
@@ -23,12 +29,15 @@ sidebar <- dashboardSidebar(
   br(),
   br(),
   br(),
+  br(),
+  br(),
   hr(),
   
   tags$span(style = "color:darkorange",
-            tags$footer(("Built by"), a( href = "http://igorhut.com", target = "_blank", "Igor Hut"),
+            tags$footer(("Built by"), a( href = "http://igorhut.com/", target = "_blank", "Igor Hut"),
                         br(),
-                        ("Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)")
+                        ("Code licence:"), a( href = "https://www.r-project.org/Licenses/MIT", 
+                                              target = "_blank", "MIT")
             )
   )
 )
@@ -37,7 +46,17 @@ body <- dashboardBody(
   tabItems(
     #First tab content
     tabItem(tabName = "instructions",
-            h1("Jebala Mara bumbara...")
+            h1("Instructions"),
+            br(),
+            h3("Description"),
+            "Matrix eQTL is designed for fast eQTL analysis of large datasets. 
+            Matrix eQTL can test for association between genotype and gene expression 
+            using linear regression with either additive or ANOVA (additive and dominant) 
+            genotype effects. The models can include covariates to account for such factors 
+            as population stratification, gender, clinical variables, and surrogate variables. 
+            Matrix eQTL also supports models with heteroscedastic and/or correlated errors, 
+            false discovery rate estimation and separate treatment of local (cis) and distant 
+            (trans) eQTLs."
             ),
     # Second tab content
     tabItem(tabName = "inputs", 
@@ -49,36 +68,52 @@ body <- dashboardBody(
                   id = "tabset1",
                   width = 12,
                   tabPanel("SNP file", "Explanation...",
-                           fileInput("snp_file", "Choose SNP file",
-                                     buttonLabel = "Browse...", 
-                                     placeholder = "No file selected",
-                                     accept = "text/tab-separated-values")
+                           br(),
+                           br(),
+                           shinyFilesButton("snp_file", "Choose the SNP file" ,
+                                            title = "Please select a file:", multiple = FALSE,
+                                            buttonType = "primary", class = NULL),
+                           br(),
+                           textOutput("txt_file1")
                            ),
                   tabPanel("GE file", "Explanation...",
-                           fileInput("ge_file", "Choose GE file",
-                                     buttonLabel = "Browse...", 
-                                     placeholder = "No file selected",
-                                     accept = "text/tab-separated-values")
+                           br(),
+                           br(),
+                           shinyFilesButton("ge_file", "Choose the GE file" ,
+                                            title = "Please select a file:", multiple = FALSE,
+                                            buttonType = "primary", class = NULL),
+                           br(),
+                           textOutput("txt_file2")
                   ),
-                  tabPanel("SNPs locations","Explanation...",
-                           fileInput("snpsloc_file", "Choose snpsloc file",
-                                     buttonLabel = "Browse...", 
-                                     placeholder = "No file selected",
-                                     accept = "text/tab-separated-values")
-                           ),
-                  tabPanel("Gene locations","Explanation...",
-                           fileInput("geneloc_file", "Choose geneloc file",
-                                     buttonLabel = "Browse...", 
-                                     placeholder = "No file selected",
-                                     accept = "text/tab-separated-values")
-                           ),
-                  tabPanel("Covariates","Explanation...",
-                           fileInput("covarates_file", "Choose covariates file",
-                                     buttonLabel = "Browse...", 
-                                     placeholder = "No file selected",
-                                     accept = "text/tab-separated-values")
+                  tabPanel("SNPs locations", "Explanation...",
+                           br(),
+                           br(),
+                           shinyFilesButton("snpsloc_file", "Choose snpsloc file" ,
+                                            title = "Please select a file:", multiple = FALSE,
+                                            buttonType = "primary", class = NULL),
+                           br(),
+                           textOutput("txt_file3")
+                  ),
+                  tabPanel("Gene locations", "Explanation...",
+                           br(),
+                           br(),
+                           shinyFilesButton("geneloc_file", "Choose geneloc file" ,
+                                            title = "Please select a file:", multiple = FALSE,
+                                            buttonType = "primary", class = NULL),
+                           br(),
+                           textOutput("txt_file4")
+                  ),
+                  tabPanel("Covariates", "Explanation...",
+                           br(),
+                           br(),
+                           shinyFilesButton("covariates_file", "Choose covariates file" ,
+                                            title = "Please select a file:", multiple = FALSE,
+                                            buttonType = "primary", class = NULL),
+                           br(),
+                           textOutput("txt_file5")
                   )
-                )
+                  
+               )
             ),
             
           fluidRow(
@@ -120,7 +155,7 @@ body <- dashboardBody(
           fluidRow(
             box(
               background = "blue",
-              actionButton("calculate", "Calculation", 
+              actionButton("calculate1", "Calculation", 
                            width = '100%', icon = icon("play-circle"))
               
             )
