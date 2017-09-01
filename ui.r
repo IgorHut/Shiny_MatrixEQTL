@@ -19,7 +19,7 @@ sidebar <- dashboardSidebar(
     menuItem("Instructions", tabName = "instructions", icon = icon("book")),
     menuItem("Inputs and settings", tabName = "inputs", icon = icon("folder-open"),
              badgeLabel = "Important!", badgeColor = "red"),
-    #actionButton("calculate1", "Calculation", icon = icon("play-circle")),
+    # actionButton("calculate1", "Calculation", icon = icon("play-circle")),
     menuItem("Results", tabName = "results", icon = icon("file-text")),
     menuItem("Plots", tabName = "plots", icon = icon("picture-o")),
     menuItem("Source code", icon = icon("file-code-o"), 
