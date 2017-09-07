@@ -9,20 +9,7 @@ library(shinyFiles)
 
 server <- function(input, output, session) { 
   
-# Mock-up content #
-#############################################################################  
-  # output$tbl_cis <-  DT::renderDataTable(
-  #   iris, options = list(lengthChange = FALSE)
-  # )
-  # 
-  # output$tbl_trans <-  DT::renderDataTable(
-  #   iris, options = list(lengthChange = FALSE)
-  # )
-  
-  # output$first_plot <- renderPlot({
-  #   plot(1:10, 1:10, pch=10:20, col=1:10, cex=1:10, main = input$mytext)
-  # })
-  
+ # Mockup plot 
   output$second_plot <- renderPlot({
     plot(1:10, 1:10, pch=0:10, col=1:10, cex=1:10, main = input$mytext)
   })
@@ -171,7 +158,9 @@ observeEvent(input$calculate1, {
      ## Run the analysis
      snpspos = read.table(snps_location_file_name(), header = TRUE, stringsAsFactors = FALSE);
      genepos = read.table(gene_location_file_name(), header = TRUE, stringsAsFactors = FALSE);
-     me = Matrix_eQTL_main(
+     
+     # Calculation - histogram
+     meh = Matrix_eQTL_main(
        snps = snps,
        gene = gene,
        cvrt = cvrt,
@@ -188,22 +177,44 @@ observeEvent(input$calculate1, {
        pvalue.hist = TRUE,
        min.pv.by.genesnp = FALSE,
        noFDRsaveMemory = FALSE);
+     
+     meq = Matrix_eQTL_main(
+       snps = snps,
+       gene = gene,
+       cvrt = cvrt,
+       output_file_name = output_file_name_tra,
+       pvOutputThreshold = pvOutputThreshold_tra,
+       useModel = useModel,
+       errorCovariance = errorCovariance,
+       verbose = FALSE,
+       output_file_name.cis = output_file_name_cis,
+       pvOutputThreshold.cis = pvOutputThreshold_cis,
+       snpspos = snpspos,
+       genepos = genepos,
+       cisDist = cisDist,
+       pvalue.hist = "qqplot",
+       min.pv.by.genesnp = FALSE,
+       noFDRsaveMemory = FALSE); 
 
      unlink(output_file_name_tra);
      unlink(output_file_name_cis);
 
      ## Results:
      output$tbl_cis <-  DT::renderDataTable(
-       me$cis$eqtls, options = list(lengthChange = FALSE)
+       meh$cis$eqtls, options = list(lengthChange = FALSE)
      )
      
      output$tbl_trans <-  DT::renderDataTable(
-       me$trans$eqtls, options = list(lengthChange = FALSE)
+       meh$trans$eqtls, options = list(lengthChange = FALSE)
      )
      
      ## Make the histogram of local and distant p-values
      output$first_plot <- renderPlot({
-       plot(me)
+       plot(meh)
+     })
+     
+     output$second_plot <- renderPlot({
+       plot(meq)
      })
 
 
