@@ -5,17 +5,16 @@ library(shiny)
 library(shinydashboard)
 library(MatrixEQTL)
 library(shinyFiles)
+library(d3heatmap)
+# library(gplots)
+library(reshape2)
+library(dplyr)
 
 
 server <- function(input, output, session) { 
   
- # Mockup plot 
-  output$second_plot <- renderPlot({
-    plot(1:10, 1:10, pch=0:10, col=1:10, cex=1:10, main = input$mytext)
-  })
-############################################################################# 
-  
-  roots = c(wd ='/Users/igorhut/Documents/eQTL/Code/')
+ 
+  roots = c(wd ='/Users/igorhut/Documents/GitHub/Shiny_MatrixEQTL/Data')
   observe({  
     shinyFileChoose(input, "snp_file", roots = roots, session = session, 
                     filetypes=c('', 'txt'))
@@ -209,13 +208,28 @@ observeEvent(input$calculate1, {
      )
      
      ## Make the histogram of local and distant p-values
-     output$first_plot <- renderPlot({
+     output$pvalue_plot <- renderPlot({
        plot(meh)
      })
      
-     output$second_plot <- renderPlot({
+     output$qq_plot <- renderPlot({
        plot(meq)
      })
+     
+     tmp_cis <- (select(meh$cis$eqtls, snps, gene, pvalue))
+     matrix_cis <- acast(tmp_cis, snps~gene, value.var="pvalue")
+     
+     # output$heatmap_cis <- renderPlot({
+     #   heatmap.2(matrix_cis, dendrogram = "none", Rowv = FALSE, Colv = FALSE, na.color = "grey")
+     # })
+     
+     output$heatmap_cis <- renderD3heatmap({
+      d3heatmap(matrix_cis, dendrogram = "none", rm.na = TRUE, color = "YlGnBu")
+    })
+
+    # output$heatmap_trans <- renderPlot({
+    #   d3heatmap(meh$trans$eqtls, colors = "RdYlBu")
+    # })
 
 
     })

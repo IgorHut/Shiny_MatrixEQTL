@@ -8,6 +8,8 @@ library(shinyFiles)
 
 
 
+
+
 header <- dashboardHeader( title = "eQTL analysis via MatrixEQTL",
                            titleWidth = 350
                            )
@@ -192,12 +194,20 @@ body <- dashboardBody(
                         width = 12,
                         tabPanel(
                           "P-values histogram",
-                          plotOutput("first_plot")
+                          plotOutput("pvalue_plot")
                         ),
                         tabPanel(
                           "Q-Q plot for p-values",
-                          plotOutput("second_plot")
+                          plotOutput("qq_plot")
+                        ),
+                        tabPanel("Heatmap for cis eQTLs",
+                                 d3heatmapOutput("heatmap_cis")
+                                 # plotOutput("heatmap_cis")
+
                         )
+                        
+                        
+
                       )
                     )
                     
