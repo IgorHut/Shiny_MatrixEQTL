@@ -6,7 +6,7 @@ library(shinydashboard)
 library(MatrixEQTL)
 library(shinyFiles)
 library(d3heatmap)
-# library(gplots)
+library(gplots)
 library(reshape2)
 library(dplyr)
 
@@ -219,17 +219,26 @@ observeEvent(input$calculate1, {
      tmp_cis <- (select(meh$cis$eqtls, snps, gene, pvalue))
      matrix_cis <- acast(tmp_cis, snps~gene, value.var="pvalue")
      
-     # output$heatmap_cis <- renderPlot({
-     #   heatmap.2(matrix_cis, dendrogram = "none", Rowv = FALSE, Colv = FALSE, na.color = "grey")
-     # })
+     tmp_trans <- (select(meh$trans$eqtls, snps, gene, pvalue))
+     matrix_trans <- acast(tmp_trans, snps~gene, value.var = "pvalue")
      
-     output$heatmap_cis <- renderD3heatmap({
+     if(dim(matrix_cis)[1]*dim(matrix_cis)[2] > 30000){
+     output$no_cis_heatmap <- renderText({
+       "Heatmap matrix dimensions are too large for succesful visualisation!"
+     })} else {
+     output$heatmap_cis_interactive <- renderD3heatmap({
       d3heatmap(matrix_cis, dendrogram = "none", rm.na = TRUE, color = "YlGnBu")
     })
+     }
 
-    # output$heatmap_trans <- renderPlot({
-    #   d3heatmap(meh$trans$eqtls, colors = "RdYlBu")
-    # })
+     if(dim(matrix_trans)[1]*dim(matrix_trans)[2] > 30000){
+       output$no_trans_heatmap <- renderText({
+         "Heatmap matrix dimensions are too large for succesful visualisation!"
+       })} else {
+         output$heatmap_trans_interactive <- renderD3heatmap({
+           d3heatmap(matrix_trans, dendrogram = "none", rm.na = TRUE, color = "YlOrRd")
+         })
+       }
 
 
     })

@@ -5,7 +5,7 @@ library(shiny)
 library(shinydashboard)
 library(MatrixEQTL)
 library(shinyFiles)
-
+library(d3heatmap)
 
 
 
@@ -200,21 +200,21 @@ body <- dashboardBody(
                           "Q-Q plot for p-values",
                           plotOutput("qq_plot")
                         ),
-                        tabPanel("Heatmap for cis eQTLs",
-                                 d3heatmapOutput("heatmap_cis")
-                                 # plotOutput("heatmap_cis")
-
-                        )
+                        tabPanel("Interactive heatmap for cis eQTLs",
+                                 d3heatmapOutput("heatmap_cis_interactive"),
+                                 h3(textOutput("no_cis_heatmap"))
+                        ),
                         
-                        
-
+                        tabPanel("Interactive heatmap for trans eQTLs",
+                                 d3heatmapOutput("heatmap_trans_interactive"),
+                                 h3(textOutput("no_trans_heatmap"))
                       )
                     )
                     
-                    )
+                )
   
 )
-)
+))
 
   
 
